@@ -1,5 +1,5 @@
 # Publishes to npm with provenance when a version tag (v1.2.3) is pushed. Uses npm Trusted Publishing (OIDC):
-# npmjs.com → n8n-nodes-shopxare → Settings → Trusted publishing → GitHub Actions, this repository, publish.yml.
+# npmjs.com → n8n-nodes-shopxare → Settings → Trusted publishing → GitHub Actions, this repository, publish.yml, environment Shopxare.
 name: Publish
 
 on:
@@ -13,6 +13,8 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Must match the environment set in npm's trusted publisher settings.
+    environment: Shopxare
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
