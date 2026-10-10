@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-shopxare",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shopxare nodes for n8n: a trigger for conversations, messages, contacts and surveys, and actions for contacts, replies and tags.",
   "keywords": [
     "n8n-community-node-package",
@@ -11,11 +11,12 @@
   "license": "MIT",
   "homepage": "https://shopxare.com",
   "author": {
-    "name": "Shopxare"
+    "name": "Shopxare",
+    "email": "info@shopxare.com"
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc && cp nodes/Shopxare/shopxare.svg dist/nodes/Shopxare/ && cp nodes/ShopxareTrigger/shopxare.svg dist/nodes/ShopxareTrigger/",
+    "build": "tsc && cp nodes/Shopxare/*.svg dist/nodes/Shopxare/ && cp nodes/ShopxareTrigger/*.svg dist/nodes/ShopxareTrigger/ && cp credentials/*.svg dist/credentials/",
     "prepublishOnly": "npm run build"
   },
   "files": [

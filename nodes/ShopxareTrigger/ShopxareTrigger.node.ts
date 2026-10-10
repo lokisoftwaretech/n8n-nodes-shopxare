@@ -1,3 +1,4 @@
+import { NodeConnectionTypes } from 'n8n-workflow';
 import type { IDataObject, IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData } from 'n8n-workflow';
 import { createHmac, timingSafeEqual } from 'crypto';
 
@@ -6,14 +7,14 @@ export class ShopxareTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Shopxare Trigger',
 		name: 'shopxareTrigger',
-		icon: 'file:shopxare.svg',
+		icon: { light: 'file:shopxare.svg', dark: 'file:shopxare.dark.svg' },
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["event"]}}',
 		description: 'Starts the workflow when something happens in Shopxare',
 		defaults: { name: 'Shopxare Trigger' },
 		inputs: [],
-		outputs: ['main'],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'shopxareApi', required: true }],
 		webhooks: [{ name: 'default', httpMethod: 'POST', responseMode: 'onReceived', path: 'webhook' }],
 		properties: [
@@ -24,13 +25,13 @@ export class ShopxareTrigger implements INodeType {
 				required: true,
 				default: 'conversation.created',
 				options: [
-					{ name: 'New Conversation', value: 'conversation.created' },
-					{ name: 'New Customer Message', value: 'message.received' },
-					{ name: 'New Team Reply', value: 'message.sent' },
 					{ name: 'Conversation Closed', value: 'conversation.closed' },
 					{ name: 'Conversation Tagged', value: 'conversation.tagged' },
 					{ name: 'New Contact', value: 'contact.created' },
+					{ name: 'New Conversation', value: 'conversation.created' },
+					{ name: 'New Customer Message', value: 'message.received' },
 					{ name: 'New Survey Response', value: 'survey.answered' },
+					{ name: 'New Team Reply', value: 'message.sent' },
 				],
 			},
 		],
@@ -66,8 +67,9 @@ export class ShopxareTrigger implements INodeType {
 					const credentials = await this.getCredentials('shopxareApi');
 					try {
 						await this.helpers.httpRequestWithAuthentication.call(this, 'shopxareApi', { method: 'DELETE', url: `${credentials.baseUrl}/hooks/${data.hookId}` });
-					} catch {
-						// Already gone.
+					} catch (error) {
+						// Usually already gone on our side; nothing else to clean up.
+						this.logger.warn(`Shopxare: could not remove the webhook subscription: ${(error as Error).message}`);
 					}
 					delete data.hookId;
 					delete data.secret;

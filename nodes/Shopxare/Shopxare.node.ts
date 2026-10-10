@@ -1,18 +1,20 @@
-import type { IDataObject, IExecuteFunctions, ILoadOptionsFunctions, INodeExecutionData, INodePropertyOptions, INodeType, INodeTypeDescription, IHttpRequestMethods } from 'n8n-workflow';
+import { NodeApiError, NodeConnectionTypes } from 'n8n-workflow';
+import type { IDataObject, IExecuteFunctions, IHttpRequestMethods, ILoadOptionsFunctions, INodeExecutionData, INodePropertyOptions, INodeType, INodeTypeDescription, JsonObject } from 'n8n-workflow';
 
 /** Actions on Shopxare: contacts, conversations and events. */
 export class Shopxare implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Shopxare',
 		name: 'shopxare',
-		icon: 'file:shopxare.svg',
+		icon: { light: 'file:shopxare.svg', dark: 'file:shopxare.dark.svg' },
+		usableAsTool: true,
 		group: ['output'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Work with Shopxare contacts and conversations',
 		defaults: { name: 'Shopxare' },
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'shopxareApi', required: true }],
 		properties: [
 			{
@@ -51,11 +53,11 @@ export class Shopxare implements INodeType {
 					{ name: 'Get', value: 'get', action: 'Get a conversation' },
 					{ name: 'Reply', value: 'reply', action: 'Reply to a conversation' },
 					{ name: 'Add Tag', value: 'tag', action: 'Add a tag to a conversation' },
-					{ name: 'Update', value: 'update', action: 'Close, reopen or prioritize a conversation' },
+					{ name: 'Update', value: 'update', action: 'Update a conversation' },
 				],
 			},
 			// Contact
-			{ displayName: 'Email', name: 'email', type: 'string', default: '', displayOptions: { show: { resource: ['contact'], operation: ['create', 'find'] } } },
+			{ displayName: 'Email', name: 'email', type: 'string', placeholder: 'name@email.com', default: '', displayOptions: { show: { resource: ['contact'], operation: ['create', 'find'] } } },
 			{ displayName: 'Name', name: 'name', type: 'string', default: '', displayOptions: { show: { resource: ['contact'], operation: ['create'] } } },
 			{ displayName: 'Phone', name: 'phone', type: 'string', default: '', displayOptions: { show: { resource: ['contact'], operation: ['create'] } } },
 			{ displayName: 'Your Customer ID', name: 'externalId', type: 'string', default: '', description: 'Makes the contact a user linked to your system', displayOptions: { show: { resource: ['contact'], operation: ['create'] } } },
@@ -145,7 +147,7 @@ export class Shopxare implements INodeType {
 					out.push({ json: { error: (error as Error).message }, pairedItem: { item: i } });
 					continue;
 				}
-				throw error;
+				throw new NodeApiError(this.getNode(), error as JsonObject);
 			}
 		}
 		return [out];
