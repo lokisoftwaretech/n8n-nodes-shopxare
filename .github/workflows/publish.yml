@@ -1,0 +1,25 @@
+# Publishes to npm with provenance when a version tag (v1.2.3) is pushed. Uses npm Trusted Publishing (OIDC):
+# npmjs.com → n8n-nodes-shopxare → Settings → Trusted publishing → GitHub Actions, this repository, publish.yml.
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm publish --provenance --access public
