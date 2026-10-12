@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-shopxare",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shopxare nodes for n8n: a trigger for conversations, messages, contacts and surveys, and actions for contacts, replies and tags.",
   "keywords": [
     "n8n-community-node-package",
